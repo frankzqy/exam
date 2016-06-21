@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.inspur.exam.dao.StaffMapper">
+
+    <resultMap type="org.inspur.exam.data.Staff" id="staffResultMap">
+        <id property="staffId" column="staffId" />
+        <result property="name" column="name"/>
+        <result property="wages" column="wages"/>
+        <result property="tax" column="tax"/>
+        <result property="afterTax" column="afterTax"/>
+    </resultMap>
+    
+    <insert id="addStaff" parameterType="org.inspur.exam.data.Staff">
+		INSERT INTO staff (
+			staffId,
+			`name`,
+			wages,
+			afterTax
+		)
+		VALUES
+			(
+				#{staffId},
+				#{name},
+				#{wages},
+				#{afterTax}
+			)
+	</insert>
+    
+    <select id="findOne" resultMap="staffResultMap" parameterType="java.lang.String" >
+        SELECT staffId,
+			`name`,
+			wages,
+			wages - afterTax tax,
+			afterTax 
+		FROM staff  
+		WHERE staffId = #{staffId}       
+    </select>
+    
+    <select id="findAll" resultMap="staffResultMap" parameterType="map">
+    	SELECT
+			staffId,
+			`name`,
+			wages,
+			wages - afterTax tax,
+			afterTax
+		FROM
+			staff
+		<if test="name != null || staffId != null">
+			WHERE
+			1 = 1 
+			<if test="staffId != null">
+				and staffId like '%${staffId}%'
+			</if>
+			<if test="name != null" >
+				and NAME LIKE '%${name}%'
+			</if>
+		</if>
+		
+    </select>
+    
+    <delete id="deleteStaff" parameterType="java.lang.String">
+    	delete from staff where staffid = #{staffId}
+    </delete>
+    
+     <delete id="deleteAll" parameterType="java.lang.String">
+    	delete from staff where staffid in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+    </delete>
+    
+    
+     <update id="updateStaff" parameterType="org.inspur.exam.data.Staff">
+    	update staff set 
+    		name = #{name},
+    		wages = #{wages},
+    		afterTax = #{afterTax}
+    	where staffId = #{staffId}
+    </update>
+    
+    
+</mapper>

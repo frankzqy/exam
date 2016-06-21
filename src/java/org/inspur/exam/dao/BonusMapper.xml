@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.inspur.exam.dao.BonusMapper">
+
+	<resultMap type="org.inspur.exam.data.Bonus" id="bonusResultMap">
+		<id property="id" column="id" />
+		<result property="staffId" column="staffId" />
+		<result property="staffName" column="staffName" />
+		<result property="wages" column="wages" />
+		<result property="totalBonus" column="totalBonus" />
+		<result property="totalTax" column="totalTax" />
+		<result property="afterTaxBonus" column="afterTaxBonus" />
+		<result property="bonus1" column="bonus1" />
+		<result property="bonus2" column="bonus2" />
+		<result property="bonus3" column="bonus3" />
+		<result property="escapeTax" column="escapeTax" />
+		<result property="afterEscapeBonus" column="afterEscapeBonus" />
+	</resultMap>
+
+	<select id="findOne" resultMap="bonusResultMap" parameterType="String">
+		SELECT * FROM bonus WHERE id = #{id}
+	</select>
+	
+	<select id="findByStaffId" resultMap="bonusResultMap" parameterType="String">
+		SELECT * FROM bonus WHERE staffId = #{staffId}
+	</select>
+
+	<delete id="deleteBonusByStaffId" parameterType="String">
+		delete from bonus
+		where staffId = #{staffId}
+	</delete>
+	
+	<select id="findAll" resultMap="bonusResultMap" parameterType="map">
+		SELECT * FROM bonus
+		<where>
+			<if test="staffId != null and staffId != ''">
+				and staffId like '%${staffId}%'
+			</if>
+			<if test="staffName != null and staffName != ''">
+				and
+				staffName like '%${staffName}%'
+			</if>
+		</where>
+		<if test="orderSql != null">
+			order by ${orderSql}
+		</if>
+	</select>
+
+	<insert id="addBonus" parameterType="org.inspur.exam.data.Bonus">
+		insert into bonus
+		(id,staffId,staffName,wages,totalBonus,totalTax,afterTaxBonus,bonus1,bonus2,bonus3,escapeTax,afterEscapeBonus)
+		values
+		(#{id},#{staffId},#{staffName},#{wages},#{totalBonus},#{totalTax},#{afterTaxBonus},#{bonus1},#{bonus2},#{bonus3},#{escapeTax},#{afterEscapeBonus})
+	</insert>
+
+	<delete id="deleteBonus" parameterType="String">
+		delete from bonus where id in
+		<foreach collection="array" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deletebonusById" parameterType="String">
+		delete from bonus
+		where id = #{id}
+	</delete>
+
+	<update id="updateBonus" parameterType="org.inspur.exam.data.Bonus">
+		update bonus
+		<set>
+			wages=#{wages},totalBonus=#{totalBonus},totalTax=#{totalTax},afterTaxBonus=#{afterTaxBonus},
+			bonus1=#{bonus1},bonus2=#{bonus2},bonus3=#{bonus3},escapeTax=#{escapeTax},afterEscapeBonus=#{afterEscapeBonus}
+		</set>
+		where id=#{id}
+	</update>
+
+</mapper>
